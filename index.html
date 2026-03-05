@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>祈音 Kion - 官方網站</title>
+<style>
+@font-face {
+    font-family: 'Cubic 11';
+    src: url('https://cdn.jsdelivr.net/gh/ACh-K/Cubic-11@master/fonts/web/Cubic_11.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    font-family: 'Cubic 11', sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: #090a0f;
+    color: #ffffff;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+.ambient-glow {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at center, rgba(179, 136, 255, 0.08) 0%, rgba(128, 216, 255, 0.03) 40%, transparent 70%);
+    z-index: 0;
+    pointer-events: none;
+}
+#cursor-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9998;
+}
+.star-wrap {
+    position: fixed;
+    top: -10%;
+    left: -10%;
+    width: 120%;
+    height: 120%;
+    z-index: -1;
+    pointer-events: none;
+    transition: transform 0.1s ease-out;
+}
+.layer1, .layer2, .layer3 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.layer1 {
+    background-image: radial-gradient(1.5px 1.5px at 10px 15px, #fff, transparent), radial-gradient(1.5px 1.5px at 70px 35px, #fff, transparent), radial-gradient(1.5px 1.5px at 125px 80px, #ddd, transparent);
+    background-repeat: repeat;
+    background-size: 150px 150px;
+    animation: breathe 3s infinite alternate ease-in-out;
+}
+.layer2 {
+    background-image: radial-gradient(2px 2px at 25px 80px, #b388ff, transparent), radial-gradient(2px 2px at 45px 20px, #fff, transparent), radial-gradient(2px 2px at 65px 140px, #80d8ff, transparent);
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    animation: breathe 5s infinite alternate-reverse ease-in-out;
+}
+.layer3 {
+    background-image: radial-gradient(2.5px 2.5px at 80px 60px, #ddd, transparent), radial-gradient(2.5px 2.5px at 150px 100px, #fff, transparent), radial-gradient(2.5px 2.5px at 200px 30px, #b388ff, transparent);
+    background-repeat: repeat;
+    background-size: 250px 250px;
+    animation: breathe 4s infinite alternate ease-in-out;
+}
+@keyframes breathe {
+    0% { opacity: 0.4; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1.05); }
+}
+#enter-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #0b0e1a;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: opacity 1s ease;
+}
+.enter-text {
+    font-size: 1.5rem;
+    color: #b388ff;
+    letter-spacing: 5px;
+    animation: pulse 2s infinite;
+}
+@keyframes pulse {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 50px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+    position: relative;
+}
+.profile-img {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #b388ff, #80d8ff);
+    padding: 4px;
+    box-shadow: 0 0 35px rgba(179, 136, 255, 0.4);
+    margin-bottom: 25px;
+    animation: float 6s ease-in-out infinite;
+}
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); box-shadow: 0 15px 35px rgba(128, 216, 255, 0.5); }
+    100% { transform: translateY(0px); }
+}
+.profile-img img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #0b0e1a;
+}
+h1 {
+    font-size: 2.2rem;
+    letter-spacing: 4px;
+    margin: 0 0 10px 0;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+}
+.bio {
+    font-size: 1.1rem;
+    color: #d1d5e5;
+    text-align: center;
+    margin-bottom: 40px;
+    line-height: 1.8;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+.music-controls {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    box-sizing: border-box;
+}
+.music-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.music-title {
+    color: #e0c8ff;
+    font-weight: bold;
+    font-size: 1.15rem;
+    display: flex;
+    align-items: center;
+    text-shadow: 0 0 8px rgba(179, 136, 255, 0.5);
+}
+.music-status {
+    color: #80d8ff;
+    font-size: 0.95rem;
+    margin-top: 8px;
+}
+#play-pause-btn {
+    background: rgba(179, 136, 255, 0.1);
+    border: 1px solid rgba(179, 136, 255, 0.5);
+    color: #fff;
+    border-radius: 10px;
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.3rem;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 15px rgba(179, 136, 255, 0.2);
+    padding: 0;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif !important;
+    line-height: 1;
+}
+#play-pause-btn:hover {
+    background: rgba(179, 136, 255, 0.3);
+    border-color: #b388ff;
+    box-shadow: 0 0 20px rgba(179, 136, 255, 0.6);
+    transform: scale(1.05);
+}
+.links-grid {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+.link-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 18px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    color: #ffffff;
+    text-decoration: none;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+.link-title {
+    font-size: 1.25rem;
+    letter-spacing: 2px;
+    position: relative;
+    z-index: 2;
+    transition: transform 0.3s ease;
+}
+.link-desc {
+    font-size: 0.95rem;
+    color: #80d8ff;
+    opacity: 0;
+    max-height: 0;
+    margin-top: 0;
+    position: relative;
+    z-index: 2;
+    transition: all 0.4s ease;
+    text-align: center;
+    text-shadow: 0 0 5px rgba(128, 216, 255, 0.5);
+}
+.link-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: all 0.6s ease;
+    z-index: 1;
+}
+.link-card:hover::before {
+    left: 100%;
+}
+.link-card:hover {
+    background: rgba(179, 136, 255, 0.15);
+    border-color: rgba(179, 136, 255, 0.6);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(179, 136, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+.link-card:hover .link-title {
+    transform: translateY(-2px);
+}
+.link-card:hover .link-desc {
+    opacity: 1;
+    max-height: 50px;
+    margin-top: 8px;
+}
+</style>
+</head>
+<body>
+
+<div id="enter-overlay">
+    <div class="enter-text">點擊開啟音樂盒</div>
+</div>
+
+<audio id="bgm" src="宇宙音樂盒2.mp3" loop></audio>
+
+<div class="ambient-glow"></div>
+
+<div class="star-wrap">
+    <div class="layer1"></div>
+    <div class="layer2"></div>
+    <div class="layer3"></div>
+</div>
+
+<canvas id="cursor-canvas"></canvas>
+
+<div class="container">
+    <div class="profile-img">
+        <img src="head.jpg" alt="祈音 Kion">
+    </div>
+    
+    <h1>祈音 Kion</h1>
+    <div class="bio">
+        來自星海的旋律<br>
+        用輕音樂與溫柔的聲音，陪伴你的每個夜晚。
+    </div>
+
+    <div class="music-controls">
+        <div class="music-info">
+            <span class="music-title"><span style="margin-right: 12px;">🎵</span> 祈音專屬音樂盒</span>
+            <span class="music-status" id="status-text">準備播放...</span>
+        </div>
+        <button id="play-pause-btn">⏸</button>
+    </div>
+
+    <div class="links-grid" id="links-container">
+        <a href="https://youtube.com/@71_vtuber?si=grAKuDMdYUxMUo2U" target="_blank" class="link-card">
+            <span class="link-title">Youtube</span>
+            <span class="link-desc">主要活動平台</span>
+        </a>
+        <a href="https://x.com/71_vtuber?s=21" target="_blank" class="link-card">
+            <span class="link-title">X</span>
+            <span class="link-desc">常常出沒活動地</span>
+        </a>
+        <a href="https://www.instagram.com/71_vtuber?igsh=ZHFvd21vZWxiaHkz&utm_source=qr" target="_blank" class="link-card">
+            <span class="link-title">Instagram</span>
+            <span class="link-desc">這裡的我有點抽象</span>
+        </a>
+        <a href="https://discord.gg/8y55MaUzg" target="_blank" class="link-card">
+            <span class="link-title">Discord伺服器</span>
+            <span class="link-desc">和其它祈鵝一起在海島上玩吧～</span>
+        </a>
+        <a href="https://marshmallow-qa.com/l20sv99dnqejd5w?t=WDVZOr&utm_medium=url_text&utm_source=promotion" target="_blank" class="link-card">
+            <span class="link-title">匿名棉花糖</span>
+            <span class="link-desc">想和我說的、你的煩惱、你的願望，都放進這裡！</span>
+        </a>
+        <a href="https://deerdonate.herokuapp.com/donation/%E7%A5%88%E9%9F%B3" target="_blank" class="link-card">
+            <span class="link-title">綠界贊助斗內</span>
+            <span class="link-desc">支持祈音的日常與創作！</span>
+        </a>
+    </div>
+</div>
+
+<script>
+    const overlay = document.getElementById('enter-overlay');
+    const bgm = document.getElementById('bgm');
+    const playPauseBtn = document.getElementById('play-pause-btn');
+    const statusText = document.getElementById('status-text');
+    const canvas = document.getElementById('cursor-canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let particles = [];
+    let isPlaying = false;
+
+    overlay.addEventListener('click', () => {
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, 1000);
+        
+        if(bgm.src && bgm.src !== window.location.href) {
+            bgm.play().then(() => {
+                isPlaying = true;
+                playPauseBtn.textContent = '⏸';
+                statusText.textContent = '播放中...';
+            }).catch(e => {
+                statusText.textContent = '無法播放';
+            });
+        }
+    });
+
+    playPauseBtn.addEventListener('click', () => {
+        if (!bgm.src || bgm.src === window.location.href) return;
+        
+        if (isPlaying) {
+            bgm.pause();
+            playPauseBtn.textContent = '▶';
+            statusText.textContent = '已暫停';
+        } else {
+            bgm.play().then(() => {
+                playPauseBtn.textContent = '⏸';
+                statusText.textContent = '播放中...';
+            });
+        }
+        isPlaying = !isPlaying;
+    });
+
+    const starWrap = document.querySelector('.star-wrap');
+    document.addEventListener('mousemove', (e) => {
+        const x = (e.clientX / window.innerWidth - 0.5) * 30;
+        const y = (e.clientY / window.innerHeight - 0.5) * 30;
+        starWrap.style.transform = `translate(${x}px, ${y}px)`;
+    });
+
+    function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    let mouse = { x: -100, y: -100 };
+    document.addEventListener('mousemove', (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+        
+        for (let i = 0; i < 3; i++) {
+            particles.push({
+                x: mouse.x,
+                y: mouse.y,
+                vx: (Math.random() - 0.5) * 2,
+                vy: (Math.random() - 0.5) * 2,
+                size: Math.random() * 3 + 1,
+                life: 1,
+                color: Math.random() > 0.5 ? '#b388ff' : '#80d8ff'
+            });
+        }
+    });
+
+    function animate() {
+        ctx.clearRect(0, 0, width, height);
+        
+        if (mouse.x !== -100 && mouse.y !== -100) {
+            let gradient = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 120);
+            gradient.addColorStop(0, 'rgba(179, 136, 255, 0.15)');
+            gradient.addColorStop(0.4, 'rgba(128, 216, 255, 0.05)');
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(mouse.x, mouse.y, 120, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        for (let i = 0; i < particles.length; i++) {
+            let p = particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            p.life -= 0.02;
+            p.size *= 0.95;
+            
+            ctx.globalAlpha = Math.max(0, p.life);
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+            
+            if (p.life <= 0) {
+                particles.splice(i, 1);
+                i--;
+            }
+        }
+        requestAnimationFrame(animate);
+    }
+    animate();
+</script>
+</body>
+</html>
